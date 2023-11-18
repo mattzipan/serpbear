@@ -31,10 +31,10 @@ const DiscoverPage: NextPage = () => {
    const theDomains: DomainType[] = (domainsData && domainsData.domains) || [];
    const theKeywords: SearchAnalyticsItem[] = keywordsData?.data && keywordsData.data[scDateFilter] ? keywordsData.data[scDateFilter] : [];
 
-   const activDomain: DomainType|null = useMemo(() => {
-      let active:DomainType|null = null;
+   const activDomain: DomainType | null = useMemo(() => {
+      let active: DomainType | null = null;
       if (domainsData?.domains && router.query?.slug) {
-         active = domainsData.domains.find((x:DomainType) => x.slug === router.query.slug);
+         active = domainsData.domains.find((x: DomainType) => x.slug === router.query.slug);
       }
       return active;
    }, [router.query.slug, domainsData]);
@@ -42,30 +42,30 @@ const DiscoverPage: NextPage = () => {
    return (
       <div className="Domain ">
          {activDomain && activDomain.domain
-         && <Head>
-               <title>{`${activDomain.domain} - SerpBear` } </title>
+            && <Head>
+               <title>{`${activDomain.domain} - SerpBear`} </title>
             </Head>
          }
          <TopBar showSettings={() => setShowSettings(true)} showAddModal={() => setShowAddDomain(true)} />
-         <div className="flex w-full max-w-7xl mx-auto">
+         <div className="flex w-full max-w-7xl mx-auto force-width">
             <Sidebar domains={theDomains} showAddModal={() => setShowAddDomain(true)} />
             <div className="domain_kewywords px-5 pt-10 lg:px-0 lg:pt-8 w-full">
                {activDomain && activDomain.domain
-               && <DomainHeader
-                  domain={activDomain}
-                  domains={theDomains}
-                  showAddModal={() => console.log('XXXXX')}
-                  showSettingsModal={setShowDomainSettings}
-                  exportCsv={() => exportCSV(theKeywords, activDomain.domain, scDateFilter)}
-                  scFilter={scDateFilter}
-                  setScFilter={(item:string) => setSCDateFilter(item)}
+                  && <DomainHeader
+                     domain={activDomain}
+                     domains={theDomains}
+                     showAddModal={() => console.log('XXXXX')}
+                     showSettingsModal={setShowDomainSettings}
+                     exportCsv={() => exportCSV(theKeywords, activDomain.domain, scDateFilter)}
+                     scFilter={scDateFilter}
+                     setScFilter={(item: string) => setSCDateFilter(item)}
                   />
                }
                <SCKeywordsTable
-               isLoading={keywordsLoading || isFetching}
-               domain={activDomain}
-               keywords={theKeywords}
-               isConsoleIntegrated={scConnected}
+                  isLoading={keywordsLoading || isFetching}
+                  domain={activDomain}
+                  keywords={theKeywords}
+                  isConsoleIntegrated={scConnected}
                />
             </div>
          </div>
@@ -76,12 +76,12 @@ const DiscoverPage: NextPage = () => {
 
          <CSSTransition in={showDomainSettings} timeout={300} classNames="modal_anim" unmountOnExit mountOnEnter>
             <DomainSettings
-            domain={showDomainSettings && theDomains && activDomain && activDomain.domain ? activDomain : false}
-            closeModal={setShowDomainSettings}
+               domain={showDomainSettings && theDomains && activDomain && activDomain.domain ? activDomain : false}
+               closeModal={setShowDomainSettings}
             />
          </CSSTransition>
          <CSSTransition in={showSettings} timeout={300} classNames="settings_anim" unmountOnExit mountOnEnter>
-             <Settings closeSettings={() => setShowSettings(false)} />
+            <Settings closeSettings={() => setShowSettings(false)} />
          </CSSTransition>
       </div>
    );
