@@ -12,14 +12,14 @@ type SearchResult = {
 }
 
 type SERPObject = {
-   postion:number|boolean,
+   postion:number,
    url:string
 }
 
 export type RefreshResult = false | {
    ID: number,
    keyword: string,
-   position:number | boolean,
+   position:number,
    url: string,
    result: SearchResult[],
    error?: boolean | string
@@ -192,7 +192,7 @@ export const extractScrapedResult = (content: string, device: string): SearchRes
  * @returns {SERPObject}
  */
 export const getSerp = (domain:string, result:SearchResult[]) : SERPObject => {
-   if (result.length === 0 || !domain) { return { postion: false, url: '' }; }
+   if (result.length === 0 || !domain) { return { postion: 0, url: '' }; }
    const foundItem = result.find((item) => {
       const itemDomain = item.url.replace('www.', '').match(/^(?:https?:)?(?:\/\/)?([^/?]+)/i);
       return itemDomain && itemDomain.includes(domain.replace('www.', ''));
@@ -207,7 +207,7 @@ export const getSerp = (domain:string, result:SearchResult[]) : SERPObject => {
  * @returns {void}
  */
 export const retryScrape = async (keywordID: number) : Promise<void> => {
-   if (!keywordID) { return; }
+   if (!keywordID && !Number.isInteger(keywordID)) { return; }
    let currentQueue: number[] = [];
 
    const filePath = `${process.cwd()}/data/failed_queue.json`;
@@ -215,7 +215,7 @@ export const retryScrape = async (keywordID: number) : Promise<void> => {
    currentQueue = currentQueueRaw ? JSON.parse(currentQueueRaw) : [];
 
    if (!currentQueue.includes(keywordID)) {
-      currentQueue.push(keywordID);
+      currentQueue.push(Math.abs(keywordID));
    }
 
    await writeFile(filePath, JSON.stringify(currentQueue), { encoding: 'utf-8' }).catch((err) => { console.log(err); return '[]'; });
@@ -227,13 +227,13 @@ export const retryScrape = async (keywordID: number) : Promise<void> => {
  * @returns {void}
  */
 export const removeFromRetryQueue = async (keywordID: number) : Promise<void> => {
-   if (!keywordID) { return; }
+   if (!keywordID && !Number.isInteger(keywordID)) { return; }
    let currentQueue: number[] = [];
 
    const filePath = `${process.cwd()}/data/failed_queue.json`;
    const currentQueueRaw = await readFile(filePath, { encoding: 'utf-8' }).catch((err) => { console.log(err); return '[]'; });
    currentQueue = currentQueueRaw ? JSON.parse(currentQueueRaw) : [];
-   currentQueue = currentQueue.filter((item) => item !== keywordID);
+   currentQueue = currentQueue.filter((item) => item !== Math.abs(keywordID));
 
    await writeFile(filePath, JSON.stringify(currentQueue), { encoding: 'utf-8' }).catch((err) => { console.log(err); return '[]'; });
 };

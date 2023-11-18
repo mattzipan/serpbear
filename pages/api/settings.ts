@@ -1,7 +1,7 @@
+import { writeFile, readFile } from 'fs/promises';
 import type { NextApiRequest, NextApiResponse } from 'next';
 import Cryptr from 'cryptr';
 import getConfig from 'next/config';
-import { writeFile, readFile } from 'fs/promises';
 import verifyUser from '../../utils/verifyUser';
 import allScrapers from '../../scrapers/index';
 
@@ -55,8 +55,11 @@ const updateSettings = async (req: NextApiRequest, res: NextApiResponse<Settings
 };
 
 export const getAppSettings = async () : Promise<SettingsType> => {
+   const screenshotAPIKey = process.env.SCREENSHOT_API || '69408-serpbear';
    try {
       const settingsRaw = await readFile(`${process.cwd()}/data/settings.json`, { encoding: 'utf-8' });
+      const failedQueueRaw = await readFile(`${process.cwd()}/data/failed_queue.json`, { encoding: 'utf-8' });
+      const failedQueue: string[] = failedQueueRaw ? JSON.parse(failedQueueRaw) : [];
       const settings: SettingsType = settingsRaw ? JSON.parse(settingsRaw) : {};
       let decryptedSettings = settings;
 
@@ -70,6 +73,8 @@ export const getAppSettings = async () : Promise<SettingsType> => {
             smtp_password,
             search_console_integrated: !!(process.env.SEARCH_CONSOLE_PRIVATE_KEY && process.env.SEARCH_CONSOLE_CLIENT_EMAIL),
             available_scapers: allScrapers.map((scraper) => ({ label: scraper.name, value: scraper.id })),
+            failed_queue: failedQueue,
+            screenshot_key: screenshotAPIKey,
          };
       } catch (error) {
          console.log('Error Decrypting Settings API Keys!');
@@ -78,7 +83,7 @@ export const getAppSettings = async () : Promise<SettingsType> => {
       return decryptedSettings;
    } catch (error) {
       console.log('[ERROR] Getting App Settings. ', error);
-      const settings = {
+      const settings: SettingsType = {
          scraper_type: 'none',
          notification_interval: 'never',
          notification_email: '',
@@ -87,8 +92,15 @@ export const getAppSettings = async () : Promise<SettingsType> => {
          smtp_port: '',
          smtp_username: '',
          smtp_password: '',
+         scrape_retry: false,
+         screenshot_key: screenshotAPIKey,
+      };
+      const otherSettings = {
+         available_scapers: allScrapers.map((scraper) => ({ label: scraper.name, value: scraper.id })),
+         failed_queue: [],
       };
       await writeFile(`${process.cwd()}/data/settings.json`, JSON.stringify(settings), { encoding: 'utf-8' });
-      return settings;
+      await writeFile(`${process.cwd()}/data/failed_queue.json`, JSON.stringify([]), { encoding: 'utf-8' });
+      return { ...settings, ...otherSettings };
    }
 };

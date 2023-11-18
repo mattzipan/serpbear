@@ -10,6 +10,8 @@ COPY . .
 FROM node:lts-alpine AS builder
 WORKDIR /app
 COPY --from=deps /app ./
+RUN rm -rf /app/data
+RUN rm -rf /app/__tests__
 RUN npm run build
 
 

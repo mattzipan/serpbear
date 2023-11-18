@@ -153,7 +153,7 @@ const KeywordsTable = (props: KeywordsTableProps) => {
                <div className=' lg:min-w-[800px]'>
                   <div className={`domKeywords_head domKeywords_head--${sortBy} hidden lg:flex p-3 px-6 bg-[#FCFCFF]
                    text-gray-600 justify-between items-center font-semibold border-y`}>
-                     <span className='domKeywords_head_keyword flex-1 basis-20 w-auto '>
+                     <span className='domKeywords_head_keyword flex-1 basis-[4rem] w-auto '>
                      {processedKeywords[device].length > 0 && (
                         <button
                            className={`p-0 mr-2 leading-[0px] inline-block rounded-sm pt-0 px-[1px] pb-[3px]  border border-slate-300 
@@ -165,8 +165,9 @@ const KeywordsTable = (props: KeywordsTableProps) => {
                      )}
                         Keyword
                      </span>
-                     <span className='domKeywords_head_position flex-1 basis-40 grow-0 text-center'>Position</span>
-                     <span className='domKeywords_head_history flex-1'>History (7d)</span>
+                     <span className='domKeywords_head_position flex-1 basis-24 grow-0 text-center'>Position</span>
+                     <span className='domKeywords_head_best flex-1 basis-16 grow-0 text-center'>Best</span>
+                     <span className='domKeywords_head_history flex-1 basis-32 grow-0 '>History (7d)</span>
                      <span className='domKeywords_head_url flex-1'>URL</span>
                      <span className='domKeywords_head_updated flex-1'>Updated</span>
                      {showSCData && (
@@ -175,7 +176,7 @@ const KeywordsTable = (props: KeywordsTableProps) => {
                            <div>
                               <div
                               className=' w-48 select-none cursor-pointer absolute bg-white rounded-full
-                              px-2 py-[2px] mt-[-22px] ml-3 border border-gray-200 z-50'
+                              px-2 py-[2px] mt-[-22px] ml-3 border border-gray-200 z-40'
                               onClick={() => setShowScDataTypes(!showScDataTypes)}>
                                  <Icon type="google" size={13} /> {scDataObject[scDataType]}
                                  <Icon classes="ml-2" type={showScDataTypes ? 'caret-up' : 'caret-down'} size={10} />
