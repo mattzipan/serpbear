@@ -10,8 +10,9 @@ type ChartProps = {
 }
 
 const ChartSlim = ({ labels, sreies }: ChartProps) => {
-   // Calculate the maximum value from the sreies array
+   // Calculate the maximum & min value from the sreies array
    const maxYValue = Math.max(...sreies);
+   const minYValue = Math.min(...sreies);
 
    // Check if the delta of the series is 0 (all values are the same) and all numbers are less than 10
    const isDeltaZero = new Set(sreies).size === 1;
@@ -27,7 +28,7 @@ const ChartSlim = ({ labels, sreies }: ChartProps) => {
          y: {
             display: false,
             reverse: true,
-            min: 1,
+            min: minYValue,
             max: finalMaxYValue, // Set the max value dynamically based on sreies
          },
          x: {
