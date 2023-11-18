@@ -16,7 +16,7 @@ type KeywordProps = {
    selectKeyword: Function,
    manageTags: Function,
    showKeywordDetails: Function,
-   lastItem?:boolean,
+   lastItem?: boolean,
    showSCData: boolean,
    scDataType: string,
    style: Object
@@ -48,13 +48,13 @@ const Keyword = (props: KeywordProps) => {
    }, [url, domain]);
 
    const chartData = useMemo(() => {
-      return generateTheChartData(history, '7');
+      return generateTheChartData(history, '6');
    }, [history]);
 
    const positionChange = useMemo(() => {
       let status = 0;
       if (Object.keys(history).length >= 2) {
-         const historyArray = Object.keys(history).map((dateKey:string) => {
+         const historyArray = Object.keys(history).map((dateKey: string) => {
             return { date: new Date(dateKey).getTime(), dateRaw: dateKey, position: history[dateKey] };
          });
          const historySorted = historyArray.sort((a, b) => a.date - b.date);
@@ -67,11 +67,11 @@ const Keyword = (props: KeywordProps) => {
       return status;
    }, [history, position]);
 
-   const bestPosition: false | {position: number, date: string} = useMemo(() => {
+   const bestPosition: false | { position: number, date: string } = useMemo(() => {
       let bestPos;
       if (Object.keys(history).length > 0) {
          const historyArray = Object.keys(history).map((itemID) => ({ date: itemID, position: history[itemID] }))
-         .sort((a, b) => a.position - b.position);
+            .sort((a, b) => a.position - b.position);
          if (historyArray[0]) {
             bestPos = { ...historyArray[0] };
          }
@@ -82,7 +82,7 @@ const Keyword = (props: KeywordProps) => {
 
    const optionsButtonStyle = 'block px-2 py-2 cursor-pointer hover:bg-indigo-50 hover:text-blue-700';
 
-   const renderPosition = (pos:number, type?:string) => {
+   const renderPosition = (pos: number, type?: string) => {
       if (!updating && pos === 0) {
          return <span className='text-gray-400' title='Not in Top 100'>{'>100'}</span>;
       }
@@ -94,9 +94,9 @@ const Keyword = (props: KeywordProps) => {
 
    return (
       <div
-      key={keyword}
-      style={style}
-      className={`keyword relative py-5 px-4 text-gray-600 border-b-[1px] border-gray-200 lg:py-4 lg:px-6 lg:border-0 
+         key={keyword}
+         style={style}
+         className={`keyword relative py-5 px-4 text-gray-600 border-b-[1px] border-gray-200 lg:py-4 lg:px-6 lg:border-0 
       lg:flex lg:justify-between lg:items-center ${selected ? ' bg-indigo-50 keyword--selected' : ''} ${lastItem ? 'border-b-0' : ''}`}>
 
          <div className=' w-3/4 lg:flex-1 lg:basis-20 lg:w-auto font-semibold cursor-pointer'>
@@ -104,12 +104,12 @@ const Keyword = (props: KeywordProps) => {
                className={`p-0 mr-2 leading-[0px] inline-block rounded-sm pt-0 px-[1px] pb-[3px] border 
                ${selected ? ' bg-blue-700 border-blue-700 text-white' : 'text-transparent'}`}
                onClick={() => selectKeyword(ID)}
-               >
-                  <Icon type="check" size={10} />
+            >
+               <Icon type="check" size={10} />
             </button>
             <a
-            className='py-2 hover:text-blue-600'
-            onClick={() => showKeywordDetails()}>
+               className='py-2 hover:text-blue-600'
+               onClick={() => showKeywordDetails()}>
                <span className={`fflag fflag-${country} w-[18px] h-[12px] mr-2`} title={countries[country][0]} />{keyword}
             </a>
             {sticky && <button className='ml-2 relative top-[2px]' title='Favorite'><Icon type="star-filled" size={16} color="#fbd346" /></button>}
@@ -121,20 +121,11 @@ const Keyword = (props: KeywordProps) => {
          </div>
 
          <div
-         className={`keyword_position absolute bg-[#f8f9ff] w-fit min-w-[50px] h-12 p-2 text-base mt-[-20px] rounded right-5 lg:relative
+            className={`keyword_position absolute bg-[#f8f9ff] w-fit min-w-[50px] h-12 p-2 text-base mt-[-20px] rounded right-5 lg:relative
           lg:bg-transparent lg:w-auto lg:h-auto lg:mt-0 lg:p-0 lg:text-sm lg:flex-1 lg:basis-24 lg:grow-0 lg:right-0 text-center font-semibold`}>
             {renderPosition(position)}
             {!updating && positionChange > 0 && <i className=' not-italic ml-1 text-xs text-[#5ed7c3]'>▲ {positionChange}</i>}
             {!updating && positionChange < 0 && <i className=' not-italic ml-1 text-xs text-red-300'>▼ {positionChange}</i>}
-         </div>
-
-         <div
-         title={bestPosition && bestPosition.date
-            ? new Date(bestPosition.date).toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'short', day: 'numeric' }) : ''
-         }
-         className={`keyword_best hidden bg-[#f8f9ff] w-fit min-w-[50px] h-12 p-2 text-base mt-[-20px] rounded right-5 lg:relative lg:block
-          lg:bg-transparent lg:w-auto lg:h-auto lg:mt-0 lg:p-0 lg:text-sm lg:flex-1 lg:basis-16 lg:grow-0 lg:right-0 text-center font-semibold`}>
-            {bestPosition ? bestPosition.position || '-' : (position || '-')}
          </div>
 
          {chartData.labels.length > 0 && (
@@ -146,7 +137,16 @@ const Keyword = (props: KeywordProps) => {
          )}
 
          <div
-         className={`keyword_url inline-block mt-4 mr-5 ml-5 lg:flex-1 text-gray-400 lg:m-0 max-w-[70px] 
+            title={bestPosition && bestPosition.date
+               ? new Date(bestPosition.date).toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'short', day: 'numeric' }) : ''
+            }
+            className={`keyword_best hidden bg-[#f8f9ff] w-fit min-w-[50px] h-12 p-2 text-base mt-[-20px] rounded right-5 lg:relative lg:block
+          lg:bg-transparent lg:w-auto lg:h-auto lg:mt-0 lg:p-0 lg:text-sm lg:flex-1 lg:basis-16 lg:grow-0 lg:right-0 text-center font-semibold`}>
+            {bestPosition ? bestPosition.position || '-' : (position || '-')}
+         </div>
+
+         <div
+            className={`keyword_url inline-block mt-4 mr-5 ml-5 lg:flex-1 text-gray-400 lg:m-0 max-w-[70px] 
          overflow-hidden text-ellipsis whitespace-nowrap lg:max-w-none lg:pr-5`}>
             <a href={url} target="_blank" rel="noreferrer"><span className='mr-3 lg:hidden'>
                <Icon type="link-alt" size={14} color="#999" /></span>{turncatedURL || '-'}
@@ -154,7 +154,7 @@ const Keyword = (props: KeywordProps) => {
          </div>
 
          <div
-         className='inline-block mt-[4] top-[-5px] relative lg:flex-1 lg:m-0'>
+            className='inline-block mt-[4] top-[-5px] relative lg:flex-1 lg:m-0'>
             <span className='mr-2 lg:hidden'><Icon type="clock" size={14} color="#999" /></span>
             <TimeAgo title={dayjs(lastUpdated).format('DD-MMM-YYYY, hh:mm:ss A')} date={lastUpdated} />
          </div>
@@ -178,22 +178,22 @@ const Keyword = (props: KeywordProps) => {
 
          <div className='absolute right-4 mt-[-10px] top-2 lg:flex-1 lg:basis-5 lg:grow-0 lg:shrink-0 lg:relative lg:right-[-10px]'>
             <button
-            className={`keyword_dots rounded px-1 text-indigo-300 hover:bg-indigo-50 ${showOptions ? 'bg-indigo-50 text-indigo-600 ' : ''}`}
-            onClick={() => setShowOptions(!showOptions)}>
+               className={`keyword_dots rounded px-1 text-indigo-300 hover:bg-indigo-50 ${showOptions ? 'bg-indigo-50 text-indigo-600 ' : ''}`}
+               onClick={() => setShowOptions(!showOptions)}>
                <Icon type="dots" size={20} />
             </button>
             {showOptions && (
                <ul className='keyword_options customShadow absolute w-[180px] right-0 bg-white rounded border z-20'>
                   <li>
                      <a className={optionsButtonStyle} onClick={() => { refreshkeyword([ID]); setShowOptions(false); }}>
-                     <span className=' bg-indigo-100 text-blue-700 px-1 rounded'><Icon type="reload" size={11} /></span> Refresh Keyword</a>
+                        <span className=' bg-indigo-100 text-blue-700 px-1 rounded'><Icon type="reload" size={11} /></span> Refresh Keyword</a>
                   </li>
                   <li>
                      <a className={optionsButtonStyle}
-                     onClick={() => { favoriteKeyword({ keywordID: ID, sticky: !sticky }); setShowOptions(false); }}>
+                        onClick={() => { favoriteKeyword({ keywordID: ID, sticky: !sticky }); setShowOptions(false); }}>
                         <span className=' bg-yellow-300/30 text-yellow-500 px-1 rounded'>
                            <Icon type="star" size={14} />
-                        </span> { sticky ? 'Unfavorite Keyword' : 'Favorite Keyword'}
+                        </span> {sticky ? 'Unfavorite Keyword' : 'Favorite Keyword'}
                      </a>
                   </li>
                   <li><a className={optionsButtonStyle} onClick={() => { manageTags(); setShowOptions(false); }}>
@@ -210,8 +210,8 @@ const Keyword = (props: KeywordProps) => {
             <div className={`absolute p-2 bg-white z-30 border border-red-200 rounded w-[220px] left-4 shadow-sm text-xs 
             ${index > 2 ? 'lg:bottom-12 mt-[-70px]' : ' top-12'}`}>
                Error Updating Keyword position (Tried <TimeAgo
-                                                         title={dayjs(lastUpdateError.date).format('DD-MMM-YYYY, hh:mm:ss A')}
-                                                         date={lastUpdateError.date} />)
+                  title={dayjs(lastUpdateError.date).format('DD-MMM-YYYY, hh:mm:ss A')}
+                  date={lastUpdateError.date} />)
                <i className='absolute top-0 right-0 ml-2 p-2 font-semibold not-italic cursor-pointer' onClick={() => setPositionError(false)}>
                   <Icon type="close" size={16} color="#999" />
                </i>
@@ -223,6 +223,6 @@ const Keyword = (props: KeywordProps) => {
 
       </div>
    );
- };
+};
 
- export default Keyword;
+export default Keyword;
