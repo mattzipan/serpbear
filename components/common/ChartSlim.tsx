@@ -4,12 +4,21 @@ import { Line } from 'react-chartjs-2';
 
 ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Filler, Title, Tooltip, Legend);
 
-type ChartProps ={
+type ChartProps = {
    labels: string[],
    sreies: number[]
 }
 
-const ChartSlim = ({ labels, sreies }:ChartProps) => {
+const ChartSlim = ({ labels, sreies }: ChartProps) => {
+   // Calculate the maximum value from the sreies array
+   const maxYValue = Math.max(...sreies);
+
+   // Check if the delta of the series is 0 (all values are the same) and all numbers are less than 10
+   const isDeltaZero = new Set(sreies).size === 1;
+   const allLessThanTen = sreies.every((value) => value < 10);
+
+   const finalMaxYValue = isDeltaZero && allLessThanTen ? 10 : maxYValue;
+
    const options = {
       responsive: true,
       maintainAspectRatio: false,
@@ -19,7 +28,7 @@ const ChartSlim = ({ labels, sreies }:ChartProps) => {
             display: false,
             reverse: true,
             min: 1,
-            max: 100,
+            max: finalMaxYValue, // Set the max value dynamically based on sreies
          },
          x: {
             display: false,
@@ -30,16 +39,16 @@ const ChartSlim = ({ labels, sreies }:ChartProps) => {
             enabled: false,
          },
          legend: {
-             display: false,
+            display: false,
          },
-     },
+      },
    };
 
    return <div className='w-[100px] h-[30px] rounded border border-gray-200'>
-         <Line
-            datasetIdKey='XXX'
-            options={options}
-            data={{
+      <Line
+         datasetIdKey='XXX'
+         options={options}
+         data={{
             labels,
             datasets: [
                {
@@ -51,9 +60,9 @@ const ChartSlim = ({ labels, sreies }:ChartProps) => {
                   backgroundColor: 'rgba(31, 205, 176, 0.5)',
                },
             ],
-            }}
-         />
-         </div>;
+         }}
+      />
+   </div>;
 };
 
 export default ChartSlim;
