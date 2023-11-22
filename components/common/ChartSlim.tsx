@@ -28,8 +28,8 @@ const ChartSlim = ({ labels, sreies }: ChartProps) => {
          y: {
             display: false,
             reverse: true,
-            min: minYValue,
-            max: finalMaxYValue, // Set the max value dynamically based on sreies
+            min: ((minYValue - 1) < 1) ? 1 : minYValue - 1, // - 1 to make it look more eye-pleasing
+            max: finalMaxYValue + 1, // Set the max value dynamically based on sreies, +1 to make it look more eye-pleasing
          },
          x: {
             display: false,
