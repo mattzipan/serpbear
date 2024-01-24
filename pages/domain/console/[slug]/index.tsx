@@ -10,7 +10,7 @@ import TopBar from '../../../../components/common/TopBar';
 import DomainHeader from '../../../../components/domains/DomainHeader';
 import AddDomain from '../../../../components/domains/AddDomain';
 import DomainSettings from '../../../../components/domains/DomainSettings';
-import exportCSV from '../../../../utils/exportcsv';
+import exportCSV from '../../../../utils/client/exportcsv';
 import Settings from '../../../../components/settings/Settings';
 import { useFetchDomains } from '../../../../services/domains';
 import { useFetchSCKeywords } from '../../../../services/searchConsole';
@@ -34,7 +34,7 @@ const DiscoverPage: NextPage = () => {
    const activDomain: DomainType | null = useMemo(() => {
       let active: DomainType | null = null;
       if (domainsData?.domains && router.query?.slug) {
-         active = domainsData.domains.find((x: DomainType) => x.slug === router.query.slug);
+         active = domainsData.domains.find((x: DomainType) => x.slug === router.query.slug) || null;
       }
       return active;
    }, [router.query.slug, domainsData]);
@@ -71,7 +71,7 @@ const DiscoverPage: NextPage = () => {
          </div>
 
          <CSSTransition in={showAddDomain} timeout={300} classNames="modal_anim" unmountOnExit mountOnEnter>
-            <AddDomain closeModal={() => setShowAddDomain(false)} />
+            <AddDomain closeModal={() => setShowAddDomain(false)} domains={domainsData?.domains || []} />
          </CSSTransition>
 
          <CSSTransition in={showDomainSettings} timeout={300} classNames="modal_anim" unmountOnExit mountOnEnter>

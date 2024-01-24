@@ -4,6 +4,7 @@ import Domain from '../../database/models/domain';
 import Keyword from '../../database/models/keyword';
 import getdomainStats from '../../utils/domains';
 import verifyUser from '../../utils/verifyUser';
+import { removeLocalSCData } from '../../utils/searchConsole';
 
 type DomainsGetRes = {
    domains: DomainType[]
@@ -11,13 +12,14 @@ type DomainsGetRes = {
 }
 
 type DomainsAddResponse = {
-   domain: Domain|null,
+   domains: DomainType[]|null,
    error?: string|null,
 }
 
 type DomainsDeleteRes = {
    domainRemoved: number,
    keywordsRemoved: number,
+   SCDataRemoved: boolean,
    error?: string|null,
 }
 
@@ -59,41 +61,45 @@ export const getDomains = async (req: NextApiRequest, res: NextApiResponse<Domai
    }
 };
 
-export const addDomain = async (req: NextApiRequest, res: NextApiResponse<DomainsAddResponse>) => {
-   if (!req.body.domain) {
-      return res.status(400).json({ domain: null, error: 'Error Adding Domain.' });
-   }
-   const { domain } = req.body || {};
-   const domainData = {
-      domain: domain.trim(),
-      slug: domain.trim().replaceAll('-', '_').replaceAll('.', '-'),
-      lastUpdated: new Date().toJSON(),
-      added: new Date().toJSON(),
-   };
+const addDomain = async (req: NextApiRequest, res: NextApiResponse<DomainsAddResponse>) => {
+   const { domains } = req.body;
+   if (domains && Array.isArray(domains) && domains.length > 0) {
+      const domainsToAdd: any = [];
 
-   try {
-      const addedDomain = await Domain.create(domainData);
-      return res.status(201).json({ domain: addedDomain });
-   } catch (error) {
-      return res.status(400).json({ domain: null, error: 'Error Adding Domain.' });
+      domains.forEach((domain: string) => {
+         domainsToAdd.push({
+            domain: domain.trim(),
+            slug: domain.trim().replaceAll('-', '_').replaceAll('.', '-'),
+            lastUpdated: new Date().toJSON(),
+            added: new Date().toJSON(),
+         });
+      });
+      try {
+         const newDomains:Domain[] = await Domain.bulkCreate(domainsToAdd);
+         const formattedDomains = newDomains.map((el) => el.get({ plain: true }));
+         return res.status(201).json({ domains: formattedDomains });
+      } catch (error) {
+         console.log('[ERROR] Adding New Domain ', error);
+         return res.status(400).json({ domains: [], error: 'Error Adding Domain.' });
+      }
+   } else {
+      return res.status(400).json({ domains: [], error: 'Necessary data missing.' });
    }
 };
 
 export const deleteDomain = async (req: NextApiRequest, res: NextApiResponse<DomainsDeleteRes>) => {
    if (!req.query.domain && typeof req.query.domain !== 'string') {
-      return res.status(400).json({ domainRemoved: 0, keywordsRemoved: 0, error: 'Domain is Required!' });
+      return res.status(400).json({ domainRemoved: 0, keywordsRemoved: 0, SCDataRemoved: false, error: 'Domain is Required!' });
    }
    try {
       const { domain } = req.query || {};
       const removedDomCount: number = await Domain.destroy({ where: { domain } });
       const removedKeywordCount: number = await Keyword.destroy({ where: { domain } });
-      return res.status(200).json({
-            domainRemoved: removedDomCount,
-            keywordsRemoved: removedKeywordCount,
-         });
+      const SCDataRemoved = await removeLocalSCData(domain as string);
+      return res.status(200).json({ domainRemoved: removedDomCount, keywordsRemoved: removedKeywordCount, SCDataRemoved });
    } catch (error) {
       console.log('[ERROR] Deleting Domain: ', req.query.domain, error);
-      return res.status(400).json({ domainRemoved: 0, keywordsRemoved: 0, error: 'Error Deleting Domain' });
+      return res.status(400).json({ domainRemoved: 0, keywordsRemoved: 0, SCDataRemoved: false, error: 'Error Deleting Domain' });
    }
 };
 

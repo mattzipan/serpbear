@@ -2,6 +2,12 @@ import Keyword from '../database/models/keyword';
 import parseKeywords from './parseKeywords';
 import { readLocalSCData } from './searchConsole';
 
+/**
+ * The function `getdomainStats` takes an array of domain objects, retrieves keyword and stats data for
+ * each domain, and calculates various statistics for each domain.
+ * @param {DomainType[]} domains - An array of objects of type DomainType.
+ * @returns {DomainType[]} - An array of objects of type DomainType.
+ */
 const getdomainStats = async (domains:DomainType[]): Promise<DomainType[]> => {
    const finalDomains: DomainType[] = [];
    console.log('domains: ', domains.length);
@@ -15,7 +21,8 @@ const getdomainStats = async (domains:DomainType[]): Promise<DomainType[]> => {
       domainWithStat.keywordCount = keywords.length;
       const keywordPositions = keywords.reduce((acc, itm) => (acc + itm.position), 0);
       const KeywordsUpdateDates: number[] = keywords.reduce((acc: number[], itm) => [...acc, new Date(itm.lastUpdated).getTime()], [0]);
-      domainWithStat.keywordsUpdated = new Date(Math.max(...KeywordsUpdateDates)).toJSON();
+      const lastKeywordUpdateDate = Math.max(...KeywordsUpdateDates);
+      domainWithStat.keywordsUpdated = new Date(lastKeywordUpdateDate || new Date(domain.lastUpdated).getTime()).toJSON();
       domainWithStat.avgPosition = Math.round(keywordPositions / keywords.length);
 
       // Then Load the SC File and read the stats and calculate the Last 7 days stats
